@@ -28,6 +28,7 @@ springGraphql = "1.0.0"
 springdoc = "1.7.0"
 hibernateValitation = "8.0.1.Final"
 quarkus = "3.15.0"
+codegentle = "0.0.1-SNAPSHOT"
 
 [libraries]
 antlr = { group = "org.antlr", name = "antlr4", version.ref = "antlr" }
@@ -65,6 +66,10 @@ kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test" }
 
 kotlinpoet = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotlinpoet" }
 kotlinpoet-ksp = { group = "com.squareup", name = "kotlinpoet-ksp", version.ref = "kotlinpoet" }
+
+codegentle-java = { module = "love.forte.codegentle:codegentle-java", version.ref = "codegentle" }
+codegentle-kotlin = { module = "love.forte.codegentle:codegentle-kotlin", version.ref = "codegentle" }
+codegentle-kotlin-ksp = { module = "love.forte.codegentle:codegentle-kotlin-ksp", version.ref = "codegentle" }
 
 ksp-symbolProcessing-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
 

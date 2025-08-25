@@ -20,6 +20,7 @@ dependencyResolutionManagement {
     dependencyResolutionManagement {
         repositories {
             mavenCentral()
+            mavenLocal()
         }
     }
 }
