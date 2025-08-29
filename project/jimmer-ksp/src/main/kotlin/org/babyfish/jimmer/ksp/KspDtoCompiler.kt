@@ -4,7 +4,8 @@ import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.squareup.kotlinpoet.*
+import love.forte.codegentle.common.naming.toClassName
+import love.forte.codegentle.kotlin.naming.KotlinClassNames
 import org.babyfish.jimmer.dto.compiler.*
 import org.babyfish.jimmer.ksp.immutable.meta.ImmutableProp
 import org.babyfish.jimmer.ksp.immutable.meta.ImmutableType
@@ -53,17 +54,17 @@ class KspDtoCompiler(
         }
 
     override fun isSameType(baseProp1: ImmutableProp, baseProp2: ImmutableProp): Boolean =
-        baseProp1.clientClassName.copy(nullable = false) == baseProp2.clientClassName.copy(nullable = false)
+        baseProp1.clientClassName/*.copy(nullable = false)*/ == baseProp2.clientClassName/*.copy(nullable = false)*/
 
     override fun getSimplePropType(baseProp: ImmutableProp): SimplePropType =
-        SIMPLE_PROP_TYPE_MAP[baseProp.typeName().copy(nullable = false)] ?: SimplePropType.NONE
+        SIMPLE_PROP_TYPE_MAP[baseProp.typeName()/*.copy(nullable = false)*/] ?: SimplePropType.NONE
 
     override fun getSimplePropType(pathNode: PropConfig.PathNode<ImmutableProp>): SimplePropType =
         SIMPLE_PROP_TYPE_MAP[
             if (pathNode.isAssociatedId) {
-                pathNode.prop.targetType!!.idProp!!.typeName().copy(nullable = false)
+                pathNode.prop.targetType!!.idProp!!.typeName() // .copy(nullable = false)
             } else {
-                pathNode.prop.typeName().copy(nullable = false)
+                pathNode.prop.typeName() // .copy(nullable = false)
             }
         ] ?: error(pathNode.prop.typeName())
 
@@ -73,18 +74,18 @@ class KspDtoCompiler(
     companion object {
         @JvmStatic
         private val SIMPLE_PROP_TYPE_MAP = mapOf(
-            BOOLEAN to SimplePropType.BOOLEAN,
-            BYTE to SimplePropType.BYTE,
-            SHORT to SimplePropType.SHORT,
-            INT to SimplePropType.INT,
-            LONG to SimplePropType.LONG,
-            FLOAT to SimplePropType.FLOAT,
-            DOUBLE to SimplePropType.DOUBLE,
+            KotlinClassNames.BOOLEAN to SimplePropType.BOOLEAN,
+            KotlinClassNames.BYTE to SimplePropType.BYTE,
+            KotlinClassNames.SHORT to SimplePropType.SHORT,
+            KotlinClassNames.INT to SimplePropType.INT,
+            KotlinClassNames.LONG to SimplePropType.LONG,
+            KotlinClassNames.FLOAT to SimplePropType.FLOAT,
+            KotlinClassNames.DOUBLE to SimplePropType.DOUBLE,
 
-            BigInteger::class.asTypeName().copy(nullable = false) to SimplePropType.BIG_INTEGER,
-            BigDecimal::class.asTypeName().copy(nullable = false) to SimplePropType.BIG_DECIMAL,
+            BigInteger::class.toClassName() to SimplePropType.BIG_INTEGER,
+            BigDecimal::class.toClassName() to SimplePropType.BIG_DECIMAL,
 
-            String::class.asTypeName().copy(nullable = false) to SimplePropType.STRING,
+            String::class.toClassName() to SimplePropType.STRING,
         )
     }
 }

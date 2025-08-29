@@ -9,9 +9,9 @@ dependencies {
     implementation(projects.jimmerCore)
     implementation(projects.jimmerDtoCompiler)
     implementation(libs.ksp.symbolProcessing.api)
-    implementation(libs.kotlinpoet)
+//    implementation(libs.kotlinpoet)
     // TODO remove
-    implementation(libs.kotlinpoet.ksp)
+//    implementation(libs.kotlinpoet.ksp)
 
     implementation(libs.codegentle.kotlin)
     implementation(libs.codegentle.kotlin.ksp)

@@ -2,12 +2,15 @@ package org.babyfish.jimmer.ksp.util
 
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.symbol.*
-import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSTypeArgument
+import com.google.devtools.ksp.symbol.Variance
+import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.naming.parameterized
+import love.forte.codegentle.common.ref.ref
+import love.forte.codegentle.kotlin.naming.KotlinClassNames
 import org.babyfish.jimmer.jackson.Converter
 import org.babyfish.jimmer.ksp.MetaException
-import java.lang.IllegalStateException
 
 open class ConverterMetadata(
     val sourceType: KSTypeArgument,
@@ -22,7 +25,7 @@ open class ConverterMetadata(
                     resolver
                         .getClassDeclarationByName("kotlin.collections.List")!!
                         .asType(listOf(sourceType))
-                    ),
+                ),
                 Variance.INVARIANT
             ),
             resolver.getTypeArgument(
@@ -33,8 +36,8 @@ open class ConverterMetadata(
                 ),
                 Variance.INVARIANT
             ),
-            LIST.parameterizedBy(sourceTypeName),
-            LIST.parameterizedBy(targetTypeName)
+            KotlinClassNames.LIST.parameterized(sourceTypeName.ref()),
+            KotlinClassNames.LIST.parameterized(targetTypeName.ref())
         )
 
     override fun hashCode(): Int {
@@ -47,7 +50,7 @@ open class ConverterMetadata(
         }
         val metadata = other as ConverterMetadata
         return sourceTypeName == metadata.sourceTypeName &&
-            targetTypeName == metadata.targetTypeName
+                targetTypeName == metadata.targetTypeName
     }
 
     override fun toString(): String {

@@ -1,14 +1,9 @@
 package org.babyfish.jimmer.ksp.util
 
 import com.google.devtools.ksp.symbol.*
-import com.squareup.kotlinpoet.ANY
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeName
-import com.squareup.kotlinpoet.WildcardTypeName
+import love.forte.codegentle.common.naming.*
+import love.forte.codegentle.common.ref.ref
 import org.babyfish.jimmer.ksp.MetaException
-import java.lang.Exception
-import java.lang.IllegalStateException
 
 class GenericParser(
     private val name: String,
@@ -33,8 +28,8 @@ class GenericParser(
         throw MetaException(
             declaration,
             "it does not specify the arguments for \"" +
-                superName +
-                "\""
+                    superName +
+                    "\""
         )
     }
 
@@ -72,10 +67,12 @@ class GenericParser(
                     )
                 resolve(replaced)
             }
+
             is KSTypeArgument ->
                 resolve(type as KSTypeArgument)
+
             else ->
-                ClassName.bestGuess(
+                ClassName(
                     type.declaration.qualifiedName!!.asString().let {
                         when (it) {
                             "kotlin.collections.MutableIterable" -> "kotlin.collections.Iterable"
@@ -90,20 +87,22 @@ class GenericParser(
                     if (type.arguments.isEmpty()) {
                         it
                     } else {
-                        it.parameterizedBy(
-                            type.arguments.map { a -> resolve(a) }
+                        it.parameterized(
+                            type.arguments.map { a -> resolve(a).ref() }
                         )
-                    }.copy(nullable = type.isMarkedNullable)
+                    } // .copy(nullable = type.isMarkedNullable)
                 }
         }
 
     private fun resolve(arg: KSTypeArgument): TypeName =
         when (arg.variance) {
-            Variance.STAR -> WildcardTypeName.producerOf(ANY.copy(nullable = true))
+            Variance.STAR -> WildcardTypeName() // .producerOf(ANY.copy(nullable = true))
             Variance.COVARIANT ->
-                WildcardTypeName.producerOf(resolve(arg.type!!.fastResolve()))
+                UpperWildcardTypeName(resolve(arg.type!!.fastResolve()).ref())
+//                WildcardTypeName.producerOf(resolve(arg.type!!.fastResolve()))
             Variance.CONTRAVARIANT ->
-                WildcardTypeName.consumerOf(resolve(arg.type!!.fastResolve()))
+                LowerWildcardTypeName(resolve(arg.type!!.fastResolve()).ref())
+//                WildcardTypeName.consumerOf(resolve(arg.type!!.fastResolve()))
             else ->
                 resolve(arg.type!!.fastResolve())
         }

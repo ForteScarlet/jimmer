@@ -1,9 +1,10 @@
 package org.babyfish.jimmer.ksp
 
 import com.google.devtools.ksp.symbol.*
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.TypeName
-import com.squareup.kotlinpoet.ksp.toTypeName
+import love.forte.codegentle.common.naming.ClassName
+import love.forte.codegentle.common.naming.PackageNames
+import love.forte.codegentle.common.naming.TypeName
+import love.forte.codegentle.common.naming.parseToPackageName
 import org.babyfish.jimmer.ksp.util.fastResolve
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
@@ -52,7 +53,7 @@ fun KSAnnotated.annotation(qualifiedName: String): KSAnnotation? =
             throw MetaException(
                 this,
                 "it is decorated by multiple annotations of type " +
-                    "'@${qualifiedName}' from different annotation targets: $targets"
+                        "'@${qualifiedName}' from different annotation targets: $targets"
             )
         }
         selfAnno ?: getterAnno ?: returnAnno
@@ -62,41 +63,91 @@ fun KSAnnotated.annotation(qualifiedName: String): KSAnnotation? =
         }
     }
 
-fun KSClassDeclaration.className(nullable: Boolean = false, simpleNameTranslator: (String) -> String = {it}): ClassName =
+//fun KSClassDeclaration.className(nullable: Boolean = false, simpleNameTranslator: (String) -> String = {it}): ClassName =
+//    ClassName(
+//        packageName.asString(),
+//        simpleName.asString().let(simpleNameTranslator)
+//    ).let {
+//        if (nullable) {
+//            it.copy(nullable = true) as ClassName
+//        } else {
+//            it
+//        }
+//    }
+//
+//fun KSClassDeclaration.nestedClassName(nullable: Boolean = false, simpleNameListTranslator: (String) -> List<String>): ClassName =
+//    ClassName(
+//        packageName.asString(),
+//        simpleName.asString().let(simpleNameListTranslator)
+//    ).let {
+//        if (nullable) {
+//            it.copy(nullable = true) as ClassName
+//        } else {
+//            it
+//        }
+//    }
+//
+//fun KSClassDeclaration.nestedClassName(nullable: Boolean = false): ClassName =
+//    ClassName(
+//        packageName.asString(),
+//        (qualifiedName?.asString()?.substring(packageName.asString().length) ?: simpleName.asString())
+//    ).let {
+//        if (nullable) {
+//            it.copy(nullable = true) as ClassName
+//        } else {
+//            it
+//        }
+//    }
+
+fun KSClassDeclaration.className(
+//    nullable: Boolean = false,
+    simpleNameTranslator: (String) -> String = { it }
+): ClassName =
     ClassName(
-        packageName.asString(),
+        packageName.asString().parseToPackageName(),
         simpleName.asString().let(simpleNameTranslator)
-    ).let {
-        if (nullable) {
-            it.copy(nullable = true) as ClassName
-        } else {
-            it
-        }
-    }
+    )
+//        .let {
+//        if (nullable) {
+//            it.copy(nullable = true) as ClassName
+//        } else {
+//            it
+//        }
+//    }
 
-fun KSClassDeclaration.nestedClassName(nullable: Boolean = false, simpleNameListTranslator: (String) -> List<String>): ClassName =
-    ClassName(
-        packageName.asString(),
-        simpleName.asString().let(simpleNameListTranslator)
-    ).let {
-        if (nullable) {
-            it.copy(nullable = true) as ClassName
-        } else {
-            it
-        }
-    }
+fun KSClassDeclaration.nestedClassName(
+//    nullable: Boolean = false,
+    simpleNameListTranslator: (String) -> List<String>
+): ClassName {
+    val nameList = simpleName.asString().let(simpleNameListTranslator)
+    return ClassName(
+        packageName.asString().parseToPackageName(),
+        nameList.first(),
+        *nameList.drop(1).toTypedArray()
+    )
+}
+//        .let {
+//        if (nullable) {
+//            it.copy(nullable = true) as ClassName
+//        } else {
+//            it
+//        }
+//    }
 
-fun KSClassDeclaration.nestedClassName(nullable: Boolean = false): ClassName =
+fun KSClassDeclaration.nestedClassName(
+//    nullable: Boolean = false
+): ClassName =
     ClassName(
         packageName.asString(),
         (qualifiedName?.asString()?.substring(packageName.asString().length) ?: simpleName.asString())
-    ).let {
-        if (nullable) {
-            it.copy(nullable = true) as ClassName
-        } else {
-            it
-        }
-    }
+    )
+//        .let {
+//        if (nullable) {
+//            it.copy(nullable = true) as ClassName
+//        } else {
+//            it
+//        }
+//    }
 
 val KSAnnotation.fullName: String
     get() = annotationType.fastResolve().declaration.fullName
@@ -126,7 +177,7 @@ fun KSAnnotation.getClassListArgument(annoProp: KProperty1<out Annotation, Array
         ?: emptyList()
 
 @Suppress("UNCHECKED_CAST")
-inline fun <reified E: Enum<E>> KSAnnotation.getEnumListArgument(annoProp: KProperty1<out Annotation, Array<out E>>): List<E> {
+inline fun <reified E : Enum<E>> KSAnnotation.getEnumListArgument(annoProp: KProperty1<out Annotation, Array<out E>>): List<E> {
     val list = arguments.firstOrNull { it.name?.asString() == annoProp.name }?.value as List<Any>? ?: return emptyList()
     return list.map { value ->
         val name = value.toString()
@@ -135,14 +186,27 @@ inline fun <reified E: Enum<E>> KSAnnotation.getEnumListArgument(annoProp: KProp
     }
 }
 
+//fun TypeName.isBuiltInType(nullable: Boolean? = null): Boolean {
+//    if (this !is ClassName) {
+//        return false
+//    }
+//    if (nullable != null && isNullable != nullable) {
+//        return false
+//    }
+//    if (packageName != "kotlin") {
+//        return false
+//    }
+//    return when (simpleName) {
+//        "Boolean", "Char", "Byte", "Short", "Int", "Long", "Float", "Double" -> true
+//        else -> false
+//    }
+//}
+
 fun TypeName.isBuiltInType(nullable: Boolean? = null): Boolean {
     if (this !is ClassName) {
         return false
     }
-    if (nullable != null && isNullable != nullable) {
-        return false
-    }
-    if (packageName != "kotlin") {
+    if (packageName != PackageNames.KOTLIN) {
         return false
     }
     return when (simpleName) {

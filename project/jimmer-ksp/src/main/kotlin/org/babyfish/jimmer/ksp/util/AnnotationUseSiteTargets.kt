@@ -1,17 +1,17 @@
 package org.babyfish.jimmer.ksp.util
 
 import com.google.devtools.ksp.symbol.AnnotationUseSiteTarget
-import com.squareup.kotlinpoet.AnnotationSpec
+import love.forte.codegentle.kotlin.ref.KotlinAnnotationUseSite
 
-fun AnnotationUseSiteTarget.toPoetTarget(): AnnotationSpec.UseSiteTarget =
+fun AnnotationUseSiteTarget.toPoetTarget(): KotlinAnnotationUseSite =
     when (this) {
-        AnnotationUseSiteTarget.FIELD -> AnnotationSpec.UseSiteTarget.FIELD
-        AnnotationUseSiteTarget.GET -> AnnotationSpec.UseSiteTarget.GET
-        AnnotationUseSiteTarget.SET -> AnnotationSpec.UseSiteTarget.SET
-        AnnotationUseSiteTarget.PROPERTY -> AnnotationSpec.UseSiteTarget.PROPERTY
-        AnnotationUseSiteTarget.PARAM -> AnnotationSpec.UseSiteTarget.PARAM
-        AnnotationUseSiteTarget.SETPARAM -> AnnotationSpec.UseSiteTarget.SETPARAM
-        AnnotationUseSiteTarget.RECEIVER -> AnnotationSpec.UseSiteTarget.RECEIVER
-        AnnotationUseSiteTarget.DELEGATE -> AnnotationSpec.UseSiteTarget.DELEGATE
-        AnnotationUseSiteTarget.FILE -> AnnotationSpec.UseSiteTarget.FILE
+        AnnotationUseSiteTarget.FIELD -> KotlinAnnotationUseSite.FIELD
+        AnnotationUseSiteTarget.GET -> KotlinAnnotationUseSite.GET
+        AnnotationUseSiteTarget.SET -> KotlinAnnotationUseSite.SET
+        AnnotationUseSiteTarget.PROPERTY -> KotlinAnnotationUseSite.PROPERTY
+        AnnotationUseSiteTarget.PARAM -> KotlinAnnotationUseSite.PARAM
+        AnnotationUseSiteTarget.SETPARAM -> KotlinAnnotationUseSite.SETPARAM
+        AnnotationUseSiteTarget.RECEIVER -> KotlinAnnotationUseSite.RECEIVER
+        AnnotationUseSiteTarget.DELEGATE -> KotlinAnnotationUseSite.DELEGATE
+        AnnotationUseSiteTarget.FILE -> KotlinAnnotationUseSite.FILE
     }
