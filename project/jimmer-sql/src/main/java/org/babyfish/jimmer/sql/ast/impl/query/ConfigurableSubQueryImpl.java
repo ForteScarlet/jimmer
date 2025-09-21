@@ -78,6 +78,9 @@ public class ConfigurableSubQueryImpl<R>
                 if (type == String.class) {
                     return (TypedSubQuery<R>) new Str(data, baseQuery);
                 }
+                if (isPrimitiveNumberType(type)) {
+                    return (TypedSubQuery<R>) new Num<>(data, baseQuery);
+                }
                 if (Number.class.isAssignableFrom(type)) {
                     return (TypedSubQuery<R>) new Num<>(data, baseQuery);
                 }
@@ -93,6 +96,10 @@ public class ConfigurableSubQueryImpl<R>
             }
         }
         return new ConfigurableSubQueryImpl<>(data, baseQuery);
+    }
+
+    private static boolean isPrimitiveNumberType(Class<?> type) {
+        return type.isPrimitive() && type != boolean.class && type != char.class;
     }
 
     @Override

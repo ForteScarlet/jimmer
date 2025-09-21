@@ -11,6 +11,7 @@ English | [中文](./README_zh_CN.md)
 -   Convenient query API, robust Java DSL, elegant Kotlin DSL
     -   Dynamic querying is designed for multi-table queries
     -   DSL supports mixing native SQL expressions to use non-standard database-specific capabilities
+    -   Supports advanced SQL features such as `Derived Table`, `CTE`, and `Recursive CTE`
     -   Extends SQL capabilities, easily supporting advanced features that are costly to implement with native SQL
     -   Advanced SQL optimization capabilities
         -   Automatic removal of unnecessary table joins
@@ -145,4 +146,5 @@ Since Jimmer is a compile-time framework, and considering that not all users are
 
 -   Examples: https://github.com/babyfish-ct/jimmer-examples
 -   Documentation: https://babyfish-ct.github.io/jimmer-doc/
+-   Baeldung: https://www.baeldung.com/jimmer-orm-intro
 -   Discord: https://discord.gg/PmgR5mpY3E
